@@ -1,31 +1,18 @@
-import requests
+import sys
+import urllib2
 from bs4 import BeautifulSoup
-def horoscope(zodiac_sign: int, day: str) -> str:
-    url = (
-        "https://www.horoscope.com/us/horoscopes/general/"
-        f"horoscope-general-daily-{day}.aspx?sign={zodiac_sign}"
-    )
-    soup = BeautifulSoup(requests.get(url).content, "html.parser")
-    return soup.find("div", class_="main-horoscope").p.text
-if __name__ == "__main__":
-    print("Daily Horoscope. \n")
-    print(
-        "Input your Zodiac sign number:\n",
-        "1. Aries\n",
-        "2. Taurus\n",
-        "3. Gemini\n",
-        "4. Cancer\n",
-        "5. Leo\n",
-        "6. Virgo\n",
-        "7. Libra\n",
-        "8. Scorpio\n",
-        "9. Sagittarius\n",
-        "10. Capricorn\n",
-        "11. Aquarius\n",
-        "12. Pisces\n",
-    )
-    zodiac_sign = int(input("Input a number from said list: ").strip())
-    print("Choose some day:\n", "yesterday\n", "today\n", "tomorrow\n")
-    day = input("input the day from said list: ")
-    horoscope_text = horoscope(zodiac_sign, day)
-    print(horoscope_text)
+
+
+def horoscope(sign):
+    url = 'http://my.horoscope.com/astrology/free-daily-horoscope-%s.html' % sign
+    html_doc = urllib2.urlopen(url)
+    soup = BeautifulSoup(html_doc.read())
+    text = soup.find_all(id="textline")[1].get_text()
+    date = soup.find_all(id='advert')[1].get_text()
+    print "%s - %s\n\n%s" % (sign.capitalize(), date, text)
+
+if __name__ == '__main__':
+    try:
+        horoscope(sys.argv[1])
+    except IndexError:
+        print "Please enter a valid zodiac sign.\nUsage example: python horoscope.py taurus"
